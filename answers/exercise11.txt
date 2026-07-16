@@ -1,0 +1,43 @@
+cd todo-app/todo-backend
+
+docker compose -f docker-compose.dev.yml up -d
+
+MONGO_URL=mongodb://the_username:the_password@localhost:3456/the_database REDIS_URL=redis://localhost:6379 npm run dev
+
+docker exec -it todo-backend-redis-1 sh
+
+# redis-cli
+
+127.0.0.1:6379> KEYS *
+1) "added_todos"
+
+127.0.0.1:6379> GET added_todos
+"1"
+
+127.0.0.1:6379> SET added_todos 9001
+OK
+
+curl http://localhost:3000/statistics
+{"added_todos":9001}
+
+curl -X POST http://localhost:3000/todos \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Redis CLI test"}'
+{"text":"Redis CLI test","done":false,"_id":"6a59432d2f988599ffcc8038","__v":0}
+
+127.0.0.1:6379> GET added_todos
+"9002"
+
+127.0.0.1:6379> DEL added_todos
+(integer) 1
+
+127.0.0.1:6379> GET added_todos
+(nil)
+
+curl -X POST http://localhost:3000/todos \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Counter restart test"}'
+{"text":"Counter restart test","done":false,"_id":"6a59436e2f988599ffcc803a","__v":0}
+
+127.0.0.1:6379> GET added_todos
+"1"
