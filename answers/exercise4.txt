@@ -1,0 +1,9 @@
+docker start -i ubuntu-node
+apt-get -y install curl
+curl -sL https://deb.nodesource.com/setup_24.x | bash
+apt install -y nodejs
+node -v
+v24.18.0
+node /usr/src/app/index.js
+Hello World
+exit
