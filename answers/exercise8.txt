@@ -1,0 +1,73 @@
+cd todo-app/todo-backend
+
+docker compose -f docker-compose.dev.yml up -d
+Container todo-backend-mongo-1 Running
+
+docker exec -it todo-backend-mongo-1 bash
+
+root@92392878d01d:/# mongosh -u root -p example
+
+test> show dbs
+admin
+config
+local
+the_database
+
+test> use the_database
+switched to db the_database
+
+the_database> show collections
+todos
+
+the_database> db.todos.find({})
+[
+  {
+    _id: ObjectId('6a58f6e9eaba8d7aa71efda7'),
+    text: 'Write code',
+    done: true
+  },
+  {
+    _id: ObjectId('6a58f6e9eaba8d7aa71efda8'),
+    text: 'Learn about containers',
+    done: false
+  }
+]
+
+the_database> db.todos.insertOne({
+  text: 'Increase the number of tools in my tool belt',
+  done: false
+})
+{
+  acknowledged: true,
+  insertedId: ObjectId('6a58f77c30db0f7cca073e3e')
+}
+
+the_database> db.todos.findOne({
+  text: 'Increase the number of tools in my tool belt'
+})
+{
+  _id: ObjectId('6a58f77c30db0f7cca073e3e'),
+  text: 'Increase the number of tools in my tool belt',
+  done: false
+}
+
+MONGO_URL=mongodb://the_username:the_password@localhost:3456/the_database npm run dev
+
+curl http://localhost:3000/todos
+[
+  {
+    "_id": "6a58f6e9eaba8d7aa71efda7",
+    "text": "Write code",
+    "done": true
+  },
+  {
+    "_id": "6a58f6e9eaba8d7aa71efda8",
+    "text": "Learn about containers",
+    "done": false
+  },
+  {
+    "_id": "6a58f77c30db0f7cca073e3e",
+    "text": "Increase the number of tools in my tool belt",
+    "done": false
+  }
+]
